@@ -212,3 +212,184 @@ body {
         letter-spacing: var(--tracking-normal);
     }
 }
+
+/* React Flow Theme Styles - Using CSS variables that work with both light and dark mode */
+.react-flow {
+    /* Light mode defaults */
+    --xy-edge-stroke-default: oklch(0.93 0.0094 286.2156);
+    --xy-edge-stroke-selected-default: oklch(0.5393 0.2713 286.7462);
+    --xy-connectionline-stroke-default: oklch(0.93 0.0094 286.2156);
+    --xy-node-background-color-default: oklch(0.994 0 0);
+    --xy-node-color-default: oklch(0 0 0);
+    --xy-node-border-default: 1px solid oklch(0.93 0.0094 286.2156);
+    --xy-handle-background-color-default: oklch(0.5393 0.2713 286.7462);
+    --xy-handle-border-color-default: oklch(0.994 0 0);
+    --xy-selection-background-color-default: oklch(
+        0.5393 0.2713 286.7462 / 0.1
+    );
+    --xy-selection-border-default: 1px dotted
+        oklch(0.5393 0.2713 286.7462 / 0.8);
+    --xy-background-pattern-dots-color-default: oklch(0.4386 0 0 / 0.3);
+    --xy-background-pattern-line-color-default: oklch(0.93 0.0094 286.2156);
+    --xy-minimap-background-color-default: oklch(0.994 0 0);
+    --xy-controls-button-background-color-default: oklch(0.994 0 0);
+    --xy-controls-button-background-color-hover-default: oklch(
+        0.9393 0.0288 266.368
+    );
+    --xy-controls-button-color-default: oklch(0 0 0);
+    --xy-controls-button-border-color-default: oklch(0.93 0.0094 286.2156);
+}
+
+/* Dark mode overrides - React Flow adds .dark class when colorMode="dark" */
+.react-flow.dark {
+    --xy-edge-stroke-default: oklch(0.3289 0.0092 268.3843);
+    --xy-edge-stroke-selected-default: oklch(0.6132 0.2294 291.7437);
+    --xy-connectionline-stroke-default: oklch(0.3289 0.0092 268.3843);
+    --xy-node-background-color-default: oklch(0.2568 0.0076 274.6528);
+    --xy-node-color-default: oklch(0.9551 0 0);
+    --xy-node-border-default: 1px solid oklch(0.3289 0.0092 268.3843);
+    --xy-handle-background-color-default: oklch(0.6132 0.2294 291.7437);
+    --xy-handle-border-color-default: oklch(0.2568 0.0076 274.6528);
+    --xy-selection-background-color-default: oklch(
+        0.6132 0.2294 291.7437 / 0.15
+    );
+    --xy-selection-border-default: 1px dotted
+        oklch(0.6132 0.2294 291.7437 / 0.9);
+    --xy-background-pattern-dots-color-default: oklch(0.7058 0 0 / 0.4);
+    --xy-background-pattern-line-color-default: oklch(0.3289 0.0092 268.3843);
+    --xy-minimap-background-color-default: oklch(0.2568 0.0076 274.6528);
+    --xy-controls-button-background-color-default: oklch(
+        0.2568 0.0076 274.6528
+    );
+    --xy-controls-button-background-color-hover-default: oklch(
+        0.2795 0.0368 260.031
+    );
+    --xy-controls-button-color-default: oklch(0.9551 0 0);
+    --xy-controls-button-border-color-default: oklch(0.3289 0.0092 268.3843);
+}
+
+/* Additional dark mode node styles */
+.react-flow.dark .react-flow__node {
+    background: oklch(0.2568 0.0076 274.6528);
+    color: oklch(0.9551 0 0);
+    border-color: oklch(0.3289 0.0092 268.3843);
+}
+
+.react-flow.dark .react-flow__node.selected {
+    border-color: var(--destructive);
+    box-shadow: 0 0 0 2px var(--destructive);
+}
+
+.react-flow.dark .react-flow__edge {
+    stroke: oklch(0.3289 0.0092 268.3843);
+}
+
+.react-flow.dark .react-flow__edge.selected {
+    stroke: oklch(0.6132 0.2294 291.7437);
+    stroke-width: 2;
+}
+
+.react-flow.dark .react-flow__edge-path {
+    stroke: oklch(0.3289 0.0092 268.3843);
+}
+
+.react-flow.dark .react-flow__edge.selected .react-flow__edge-path {
+    stroke: var(--destructive);
+    stroke-width: 2.5;
+}
+
+.react-flow.dark .react-flow__edge-text {
+    fill: oklch(0.9551 0 0);
+}
+
+.react-flow.dark .react-flow__edge-textbg {
+    fill: oklch(0.2568 0.0076 274.6528);
+}
+
+.react-flow.dark .react-flow__handle {
+    background: oklch(0.6132 0.2294 291.7437);
+    border-color: oklch(0.2568 0.0076 274.6528);
+}
+
+.react-flow.dark .react-flow__handle.connecting {
+    background: oklch(0.2795 0.0368 260.031);
+}
+
+.react-flow.dark .react-flow__handle.valid {
+    background: oklch(0.6132 0.2294 291.7437);
+}
+
+.react-flow.dark .react-flow__minimap {
+    background: oklch(0.2568 0.0076 274.6528);
+    border: 1px solid oklch(0.3289 0.0092 268.3843);
+}
+
+.react-flow.dark .react-flow__controls {
+    background: transparent;
+}
+
+.react-flow.dark .react-flow__controls-button {
+    background: oklch(0.2568 0.0076 274.6528);
+    border-color: oklch(0.3289 0.0092 268.3843);
+    color: oklch(0.9551 0 0);
+}
+
+.react-flow.dark .react-flow__controls-button:hover {
+    background: oklch(0.2795 0.0368 260.031);
+}
+
+.react-flow__node-custom .node-body {
+    border-color: var(--border);
+    background: var(--card);
+    color: var(--foreground);
+    box-shadow: var(--shadow-sm);
+}
+
+.react-flow__node-custom.selected .node-body {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 45%, transparent),
+        var(--shadow-lg);
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+    stroke: var(--primary);
+    stroke-width: 2.5;
+}
+
+.react-flow__edge.selected .react-flow__edge-text {
+    fill: var(--primary);
+    font-weight: 600;
+}
+
+.react-flow__edge.selected .react-flow__edge-textbg {
+    fill: color-mix(in srgb, var(--card) 70%, transparent);
+    stroke: var(--primary);
+}
+
+.react-flow.dark .react-flow__node-custom .node-body {
+    border-color: var(--border);
+    background: var(--card);
+    color: var(--foreground);
+    box-shadow: var(--shadow-sm);
+}
+
+.react-flow.dark .react-flow__node-custom.selected .node-body {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 55%, transparent),
+        var(--shadow-lg);
+}
+
+.react-flow.dark .react-flow__edge.selected .react-flow__edge-path {
+    stroke: var(--primary);
+    stroke-width: 2.5;
+}
+
+.react-flow.dark .react-flow__edge.selected .react-flow__edge-text {
+    fill: var(--primary-foreground);
+    font-weight: 600;
+}
+
+.react-flow.dark .react-flow__edge.selected .react-flow__edge-textbg {
+    fill: color-mix(in srgb, var(--card) 60%, transparent);
+    stroke: var(--primary);
+}

@@ -25,12 +25,13 @@ export function NavSection({
     title: string;
     items: {
         title: string;
-        url: string;
+        url?: string;
         icon?: LucideIcon;
         isActive?: boolean;
         items?: {
             title: string;
-            url: string;
+            url?: string;
+            onClick?: () => void;
         }[];
     }[];
 }) {
@@ -58,9 +59,29 @@ export function NavSection({
                                     {item.items?.map((subItem) => (
                                         <SidebarMenuSubItem key={subItem.title}>
                                             <SidebarMenuSubButton asChild>
-                                                <a href={subItem.url}>
-                                                    <span>{subItem.title}</span>
-                                                </a>
+                                                {subItem.onClick ? (
+                                                    <button
+                                                        type="button"
+                                                        onClick={
+                                                            subItem.onClick
+                                                        }
+                                                        className="w-full text-left"
+                                                    >
+                                                        <span>
+                                                            {subItem.title}
+                                                        </span>
+                                                    </button>
+                                                ) : (
+                                                    <a
+                                                        href={
+                                                            subItem.url ?? "#"
+                                                        }
+                                                    >
+                                                        <span>
+                                                            {subItem.title}
+                                                        </span>
+                                                    </a>
+                                                )}
                                             </SidebarMenuSubButton>
                                         </SidebarMenuSubItem>
                                     ))}
