@@ -24,6 +24,9 @@ export const metadata: Metadata = {
     title: "GraphLab",
     description:
         "An interactive web application that allows users to create, visualize, and execute graph algorithms, aiming to support the practical learning of concepts studied in the Graph Algorithms course.",
+    icons: {
+        icon: "/icon.svg",
+    },
 };
 
 export default function RootLayout({
