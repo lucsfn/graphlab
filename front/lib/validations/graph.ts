@@ -12,53 +12,27 @@ export const addNodeSchema = z.object({
 export type AddNodeFormData = z.infer<typeof addNodeSchema>;
 
 // Schema para adicionar aresta
-export const addEdgeSchema = z.object({
-    source: z.string().min(1, "Selecione o nó de origem"),
-    target: z.string().min(1, "Selecione o nó de destino"),
-    weight: z
-        .union([
-            z.string().min(1, "O peso é obrigatório").transform((val) => {
-                const parsed = parseFloat(val);
-                if (isNaN(parsed) || !isFinite(parsed)) {
-                    throw new z.ZodError([
-                        {
-                            code: "custom",
-                            path: ["weight"],
-                            message: "O peso deve ser um número válido",
-                        },
-                    ]);
-                }
-                return parsed;
-            }),
-            z.number().finite("O peso deve ser um número válido"),
-        ]),
-}).refine(
-    (data) => data.source !== data.target,
-    {
-        message: "O nó de origem e destino não podem ser iguais",
+export const addEdgeSchema = z
+    .object({
+        source: z.string().min(1, "Selecione o nó de origem"),
+        target: z.string().min(1, "Selecione o nó de destino"),
+        weight: z.number(),
+    })
+    .refine((data) => data.source !== data.target, {
+        message: "Origem e destino devem ser diferentes",
         path: ["target"],
-    }
-);
+    });
 
 export type AddEdgeFormData = z.infer<typeof addEdgeSchema>;
 
-// Schema para peso de aresta (opcional - permite deletar valor)
 export const edgeWeightSchema = z.object({
     weight: z
-        .union([
-            z.string().transform((val) => {
-                if (val === "" || val === undefined || val === null) return undefined;
-                const parsed = parseFloat(val);
-                if (isNaN(parsed) || !isFinite(parsed)) {
-                    return undefined;
-                }
-                return parsed;
-            }),
-            z.number().finite(),
-            z.undefined(),
-        ])
-        .optional(),
+        .number({
+            error: "Informe um peso para a aresta",
+        })
+        .refine((value) => Number.isFinite(value), {
+            message: "Informe um número válido",
+        }),
 });
 
 export type EdgeWeightFormData = z.infer<typeof edgeWeightSchema>;
-

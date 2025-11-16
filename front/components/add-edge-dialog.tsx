@@ -49,7 +49,7 @@ export function AddEdgeDialog({
         defaultValues: {
             source: "",
             target: "",
-            weight: "",
+            weight: undefined,
         },
     });
 
@@ -71,14 +71,19 @@ export function AddEdgeDialog({
                 <DialogHeader>
                     <DialogTitle>Adicionar Aresta</DialogTitle>
                     <DialogDescription>
-                        Selecione os nós de origem e destino para criar uma nova aresta.
+                        Selecione os nós de origem e destino para criar uma nova
+                        aresta.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-4"
+                    >
                         {availableNodes.length === 0 ? (
                             <div className="text-sm text-muted-foreground text-center py-4">
-                                Nenhum nó disponível. Adicione pelo menos dois nós para criar uma aresta.
+                                Nenhum nó disponível. Adicione pelo menos dois
+                                nós para criar uma aresta.
                             </div>
                         ) : (
                             <>
@@ -99,45 +104,55 @@ export function AddEdgeDialog({
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    {availableNodes.map((node) => (
-                                                        <SelectItem key={node.id} value={node.id}>
-                                                            {node.label}
-                                                        </SelectItem>
-                                                    ))}
+                                                    {availableNodes.map(
+                                                        (node) => (
+                                                            <SelectItem
+                                                                key={node.id}
+                                                                value={node.id}
+                                                            >
+                                                                {node.label}
+                                                            </SelectItem>
+                                                        )
+                                                    )}
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
-                        <FormField
-                            control={form.control}
-                            name="target"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Nó de Destino</FormLabel>
-                                    <Select
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                        value={field.value}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Selecione o nó de destino" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {availableNodes.map((node) => (
-                                                <SelectItem key={node.id} value={node.id}>
-                                                    {node.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                                <FormField
+                                    control={form.control}
+                                    name="target"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Nó de Destino</FormLabel>
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                                value={field.value}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Selecione o nó de destino" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {availableNodes.map(
+                                                        (node) => (
+                                                            <SelectItem
+                                                                key={node.id}
+                                                                value={node.id}
+                                                            >
+                                                                {node.label}
+                                                            </SelectItem>
+                                                        )
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
                                 <FormField
                                     control={form.control}
                                     name="weight"
@@ -149,11 +164,19 @@ export function AddEdgeDialog({
                                                     type="number"
                                                     step="any"
                                                     placeholder="Ex: 5, 10.5"
-                                                    {...field}
                                                     value={field.value ?? ""}
-                                                    onChange={(e) => {
-                                                        field.onChange(e.target.value);
-                                                    }}
+                                                    onChange={(event) =>
+                                                        field.onChange(
+                                                            event.target
+                                                                .value === ""
+                                                                ? undefined
+                                                                : Number(
+                                                                      event
+                                                                          .target
+                                                                          .value
+                                                                  )
+                                                        )
+                                                    }
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -168,7 +191,10 @@ export function AddEdgeDialog({
                                     >
                                         Cancelar
                                     </Button>
-                                    <Button type="submit" disabled={availableNodes.length < 2}>
+                                    <Button
+                                        type="submit"
+                                        disabled={availableNodes.length < 2}
+                                    >
                                         Adicionar
                                     </Button>
                                 </DialogFooter>
@@ -180,4 +206,3 @@ export function AddEdgeDialog({
         </Dialog>
     );
 }
-

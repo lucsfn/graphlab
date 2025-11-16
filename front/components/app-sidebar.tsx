@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useState } from "react";
-import { Edit2, Play, Zap, GitBranch, MapPin } from "lucide-react";
+import { Edit2, Zap, GitBranch, MapPin } from "lucide-react";
 import { toast } from "sonner";
 
 import { AppLogo } from "@/components/app-logo";
@@ -166,10 +166,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 {
                     title: "BFS (Largura)",
                     url: "#",
+                    onClick: () => {
+                        // TODO: Implementar algoritmo BFS
+                        toast.info("Funcionalidade em desenvolvimento");
+                    },
                 },
                 {
                     title: "DFS (Profundidade)",
                     url: "#",
+                    onClick: () => {
+                        // TODO: Implementar algoritmo DFS
+                        toast.info("Funcionalidade em desenvolvimento");
+                    },
                 },
             ],
         },
@@ -182,32 +190,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 {
                     title: "Dijkstra",
                     url: "#",
+                    onClick: () => {
+                        // TODO: Implementar algoritmo Dijkstra
+                        toast.info("Funcionalidade em desenvolvimento");
+                    },
                 },
                 {
                     title: "Calcular Caminho",
                     url: "#",
+                    onClick: () => {
+                        // TODO: Implementar cálculo de caminho mínimo
+                        toast.info("Funcionalidade em desenvolvimento");
+                    },
                 },
             ],
-        },
-        {
-            title: "Controle",
-            url: "#",
-            icon: Play,
-            items: [
-                {
-                    title: "Executar",
-                    url: "#",
-                },
-                {
-                    title: "Pausar",
-                    url: "#",
-                },
-                {
-                    title: "Reiniciar",
-                    url: "#",
-                },
-            ],
-        },
+        }
     ];
 
     return (

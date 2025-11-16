@@ -21,12 +21,15 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { edgeWeightSchema, type EdgeWeightFormData } from "@/lib/validations/graph";
+import {
+    edgeWeightSchema,
+    type EdgeWeightFormData,
+} from "@/lib/validations/graph";
 
 interface EdgeWeightDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onSetWeight: (weight: number | undefined) => void;
+    onSetWeight: (weight: number) => void;
     defaultWeight?: number;
 }
 
@@ -36,25 +39,32 @@ export function EdgeWeightDialog({
     onSetWeight,
     defaultWeight,
 }: EdgeWeightDialogProps) {
+    const initialWeight = Number.isFinite(defaultWeight ?? Number.NaN)
+        ? (defaultWeight as number)
+        : Number.NaN;
+
     const form = useForm<EdgeWeightFormData>({
         resolver: zodResolver(edgeWeightSchema),
         defaultValues: {
-            weight: defaultWeight,
+            weight: initialWeight,
         },
     });
 
     useEffect(() => {
+        const nextWeight = Number.isFinite(defaultWeight ?? Number.NaN)
+            ? (defaultWeight as number)
+            : Number.NaN;
+
         if (open) {
-            form.reset({ weight: defaultWeight });
+            form.reset({ weight: nextWeight });
         } else {
-            form.reset();
+            form.reset({ weight: Number.NaN });
         }
     }, [open, defaultWeight, form]);
 
     const onSubmit = (data: EdgeWeightFormData) => {
-        // Permite salvar undefined (campo vazio) ou um número válido
         onSetWeight(data.weight);
-        form.reset();
+        form.reset({ weight: Number.NaN });
         onOpenChange(false);
     };
 
@@ -64,11 +74,14 @@ export function EdgeWeightDialog({
                 <DialogHeader>
                     <DialogTitle>Definir Peso da Aresta</DialogTitle>
                     <DialogDescription>
-                        Digite o peso para a aresta (opcional).
+                        Informe um peso numérico para a aresta.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-4"
+                    >
                         <FormField
                             control={form.control}
                             name="weight"
@@ -81,11 +94,19 @@ export function EdgeWeightDialog({
                                             step="any"
                                             placeholder="Ex: 5, 10.5"
                                             autoFocus
-                                            {...field}
-                                            value={field.value ?? ""}
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-                                                field.onChange(value === "" ? undefined : value);
+                                            value={
+                                                Number.isFinite(field.value)
+                                                    ? field.value
+                                                    : ""
+                                            }
+                                            onChange={(event) => {
+                                                const value =
+                                                    event.target.value;
+                                                field.onChange(
+                                                    value === ""
+                                                        ? Number.NaN
+                                                        : Number(value)
+                                                );
                                             }}
                                         />
                                     </FormControl>

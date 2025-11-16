@@ -59,7 +59,7 @@ function CanvasContent() {
     }, []);
 
     const handleSetWeight = useCallback(
-        (weight: number | undefined) => {
+        (weight: number) => {
             if (pendingConnection?.source && pendingConnection?.target) {
                 addEdge(
                     pendingConnection.source,
