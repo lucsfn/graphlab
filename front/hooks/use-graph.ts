@@ -133,6 +133,45 @@ export function useGraph() {
         setSelectedEdgeIds(edgeIds);
     }, []);
 
+    const highlightPath = useCallback((path: string[]) => {
+        setEdges((eds) => {
+            // Descobrir todas as arestas do caminho mínimo
+            const pathEdges = new Set<string>();
+            for (let i = 0; i < path.length - 1; i++) {
+                const from = path[i];
+                const to = path[i + 1];
+                const edge = eds.find(
+                    (e) =>
+                        (e.source === from && e.target === to) ||
+                        (e.source === to && e.target === from)
+                );
+                if (edge) pathEdges.add(edge.id);
+            }
+            return eds.map((e) => {
+                if (pathEdges.has(e.id)) {
+                    return {
+                        ...e,
+                        style: { ...e.style, stroke: "#ef4444", strokeWidth: 3 },
+                    };
+                } else {
+                    // Volta ao padrão
+                    const { style, ...rest } = e;
+                    return { ...rest };
+                }
+            });
+        });
+    }, [setEdges]);
+
+    const highlightEdges = useCallback((edgeIds: string[]) => {
+        setEdges((eds) =>
+            eds.map((e) =>
+                edgeIds.includes(e.id)
+                    ? { ...e, style: { ...e.style, stroke: "#ef4444", strokeWidth: 3 } }
+                    : { ...e, style: { ...e.style, stroke: undefined, strokeWidth: undefined } }
+            )
+        );
+    }, [setEdges]);
+
     return {
         nodes,
         edges,
@@ -152,5 +191,8 @@ export function useGraph() {
         selectedNodes,
         selectedEdges,
         setSelection,
+        highlightPath,
+        highlightEdges,
+        setEdges, // exportar para manipulação direta
     };
 }
