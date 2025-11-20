@@ -14,3 +14,18 @@ export async function runAlgorithm(req: AlgorithmRequest): Promise<AlgorithmResp
   const res = await api.post<AlgorithmResponse>("/api/graph/run", req);
   return res.data;
 }
+
+export async function runBFS(req: AlgorithmRequest): Promise<AlgorithmResponse> {
+  const res = await api.post<AlgorithmResponse>("/api/graph/bfs", req);
+  return res.data;
+}
+
+export async function runDFS(req: AlgorithmRequest): Promise<AlgorithmResponse> {
+  const res = await api.post<AlgorithmResponse>("/api/graph/dfs", req);
+  return res.data;
+}
+
+export async function runDijkstra(req: AlgorithmRequest): Promise<AlgorithmResponse> {
+  const res = await api.post<AlgorithmResponse>("/api/graph/dijkstra", req);
+  return res.data;
+}

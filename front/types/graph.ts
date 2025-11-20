@@ -51,8 +51,12 @@ export type AlgorithmResponse = {
     status: "success" | "error";
     steps?: AlgorithmStep[];
     result?: {
-        path: string[];
+        path?: string[];
         distance?: number;
+        nodesVisited?: number;
+        edgesVisited?: number;
+        pathLength?: number;
+        edgesInPath?: string[];
     };
     message?: string;
     code?: string;

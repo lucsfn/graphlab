@@ -7,6 +7,7 @@ export class GraphService {
       nodes: new Set(),
       adjacencyList: new Map(),
       directed,
+      _edgesList: edges, // manter referência para busca de id
     };
 
     nodes.forEach((n) => {
@@ -45,45 +46,122 @@ export class GraphService {
     throw { status: "error", message: "Algorithm not supported", code: "UNKNOWN_ALGO" };
   }
 
+  bfs(jsonGraph, params) {
+    const graph = this.parseGraph(jsonGraph);
+    return this._bfs(graph, params);
+  }
+
+  dfs(jsonGraph, params) {
+    const graph = this.parseGraph(jsonGraph);
+    return this._dfs(graph, params);
+  }
+
+  dijkstra(jsonGraph, params) {
+    const graph = this.parseGraph(jsonGraph);
+    return this._dijkstra(graph, params);
+  }
+
   _bfs(graph, params) {
     const start = params.start;
     const visited = new Set();
     const queue = [start];
     const steps = [];
+    let edgeCount = 0;
+    let path = [];
+    let edgesInPath = [];
+    let prev = {};
 
     while (queue.length) {
       const current = queue.shift();
       if (visited.has(current)) continue;
       visited.add(current);
+      path.push(current);
 
       const frontier = queue.slice();
       steps.push({ visited: Array.from(visited), current, frontier });
 
       const neighbors = graph.adjacencyList.get(current) || [];
       neighbors.forEach((n) => {
-        if (!visited.has(n.target)) queue.push(n.target);
+        if (!visited.has(n.target)) {
+          queue.push(n.target);
+          edgeCount++;
+          prev[n.target] = current;
+        }
       });
     }
 
-    return { status: "success", steps, result: { path: Array.from(visited) } };
+    // Calcular edgesInPath
+    if (graph._edgesList) {
+      for (let i = 1; i < path.length; i++) {
+        const from = prev[path[i]];
+        const to = path[i];
+        const edge = graph._edgesList.find(
+          (e) => (e.source === from && e.target === to) || (e.source === to && e.target === from)
+        );
+        if (edge) edgesInPath.push(edge.id);
+      }
+    }
+
+    return {
+      status: "success",
+      steps,
+      result: {
+        nodesVisited: visited.size,
+        edgesVisited: edgeCount,
+        path,
+        edgesInPath,
+      },
+    };
   }
 
   _dfs(graph, params) {
     const start = params.start;
     const visited = new Set();
     const steps = [];
+    let edgeCount = 0;
+    let path = [];
+    let edgesInPath = [];
+    let prev = {};
 
     const dfs = (node) => {
       if (visited.has(node)) return;
       visited.add(node);
+      path.push(node);
       const frontier = graph.adjacencyList.get(node).map((n) => n.target);
       steps.push({ visited: Array.from(visited), current: node, frontier });
-      graph.adjacencyList.get(node).forEach((n) => dfs(n.target));
+      graph.adjacencyList.get(node).forEach((n) => {
+        if (!visited.has(n.target)) {
+          edgeCount++;
+          prev[n.target] = node;
+        }
+        dfs(n.target);
+      });
     };
 
     dfs(start);
 
-    return { status: "success", steps, result: { path: Array.from(visited) } };
+    // Calcular edgesInPath
+    if (graph._edgesList) {
+      for (let i = 1; i < path.length; i++) {
+        const from = prev[path[i]];
+        const to = path[i];
+        const edge = graph._edgesList.find(
+          (e) => (e.source === from && e.target === to) || (e.source === to && e.target === from)
+        );
+        if (edge) edgesInPath.push(edge.id);
+      }
+    }
+
+    return {
+      status: "success",
+      steps,
+      result: {
+        nodesVisited: visited.size,
+        edgesVisited: edgeCount,
+        path,
+        edgesInPath,
+      },
+    };
   }
 
   _dijkstra(graph, params) {
@@ -142,8 +220,30 @@ export class GraphService {
 
     const distance = dist.get(end);
 
-    return { status: "success", steps, result: { path, distance } };
+    // Novo: calcular as arestas do caminho mínimo
+    let edgesInPath = [];
+    for (let i = 0; i < path.length - 1; i++) {
+      const from = path[i];
+      const to = path[i + 1];
+      // Procurar a aresta correspondente
+      const edge = (graph._edgesList || []).find(
+        (e) => (e.source === from && e.target === to) || (e.source === to && e.target === from)
+      );
+      if (edge) edgesInPath.push(edge.id);
+    }
+
+    return {
+      status: "success",
+      steps,
+      result: {
+        pathLength: path.length,
+        distance,
+        path,
+        edgesInPath,
+      },
+    };
   }
 }
 
-export default new GraphService();
+const graphServiceInstance = new GraphService();
+export default graphServiceInstance;
