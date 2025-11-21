@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+const finiteNumber = (message: string) =>
+  z.number().refine((value) => Number.isFinite(value), { message });
+
+const integerField = (message: string) =>
+  finiteNumber(message).int("Informe um número inteiro");
+
 export const addNodeSchema = z.object({
   label: z
     .string()
@@ -24,34 +30,20 @@ export const addEdgeSchema = z
 export type AddEdgeFormData = z.infer<typeof addEdgeSchema>;
 
 export const edgeWeightSchema = z.object({
-  weight: z
-    .number({
-      error: "Informe um peso para a aresta",
-    })
-    .refine((value) => Number.isFinite(value), {
-      message: "Informe um número válido",
-    }),
+  weight: finiteNumber("Informe um número válido"),
 });
 
 export type EdgeWeightFormData = z.infer<typeof edgeWeightSchema>;
 
 export const randomGraphSchema = z
   .object({
-    nodeCount: z
-      .number({
-        required_error: "Informe a quantidade de nós",
-        invalid_type_error: "Informe um número válido",
-      })
-      .int("Informe um número inteiro")
+    nodeCount: integerField("Informe a quantidade de nós")
       .min(2, "Mínimo de 2 nós")
       .max(20, "Máximo de 20 nós"),
-    edgeCount: z
-      .number({
-        required_error: "Informe a quantidade de arestas",
-        invalid_type_error: "Informe um número válido",
-      })
-      .int("Informe um número inteiro")
-      .min(1, "Mínimo de 1 aresta"),
+    edgeCount: integerField("Informe a quantidade de arestas").min(
+      1,
+      "Mínimo de 1 aresta"
+    ),
   })
   .refine(
     (data) => {
@@ -74,3 +66,15 @@ export const randomGraphSchema = z
     }
   );
 export type RandomGraphFormData = z.infer<typeof randomGraphSchema>;
+
+export const dijkstraParamsSchema = z
+  .object({
+    start: z.string().min(1, "Selecione o nó de início"),
+    end: z.string().min(1, "Selecione o nó de destino"),
+  })
+  .refine((data) => data.start !== data.end, {
+    message: "Os nós devem ser diferentes",
+    path: ["end"],
+  });
+
+export type DijkstraParamsFormData = z.infer<typeof dijkstraParamsSchema>;

@@ -20,6 +20,7 @@ import { AddEdgeDialog } from "@/components/add-edge-dialog";
 import { GraphInfoDialog } from "@/components/graph-info-dialog";
 import { EditNodeDialog } from "@/components/edit-node-dialog";
 import { RandomGraphDialog } from "@/components/random-graph-dialog";
+import { DijkstraDialog } from "@/components/dijkstra-dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,8 +36,7 @@ import { runBFS, runDFS, runDijkstra } from "@/lib/api";
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
-  const { highlightPath, highlightEdges, edges, setEdges, ...graphCtx } =
-    useGraphContext();
+  const { highlightEdges, setEdges, ...graphCtx } = useGraphContext();
   const {
     addNode,
     addEdge,
@@ -53,12 +53,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [showGraphInfoDialog, setShowGraphInfoDialog] = useState(false);
   const [showEditNodeDialog, setShowEditNodeDialog] = useState(false);
   const [showRandomGraphDialog, setShowRandomGraphDialog] = useState(false);
+  const [showDijkstraDialog, setShowDijkstraDialog] = useState(false);
   const [editingNode, setEditingNode] = useState<{
     id: string;
     label: string;
   } | null>(null);
-  // Estado para visualização
-  const [lastResult, setLastResult] = useState<any>(null);
 
   const handleAddNode = (label: string) => {
     addNode(label, { x: 250, y: 250 });
@@ -125,14 +124,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         toast.error("Algoritmo não suportado");
         return;
       }
-      setLastResult(res.result);
       if (res.status === "success") {
         let msg = "";
         if (
           (algorithm === "bfs" || algorithm === "dfs") &&
           res.result?.edgesInPath
         ) {
-          // Destacar arestas de busca em amarelo
           setEdges((eds) =>
             eds.map((e) =>
               res.result?.edgesInPath?.includes(e.id)
@@ -152,7 +149,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           );
           msg = `Busca realizada! Nós visitados: ${res.result?.nodesVisited}`;
         } else if (algorithm === "dijkstra" && res.result?.edgesInPath) {
-          // Destacar caminho mínimo em vermelho
           highlightEdges(res.result.edgesInPath);
           msg = `Caminho mínimo encontrado! Custo: ${res.result.distance}`;
         } else {
@@ -162,9 +158,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       } else {
         toast.error(res.message || "Erro ao executar algoritmo");
       }
-    } catch (err: any) {
-      toast.error(err?.message || "Erro de comunicação com o backend");
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Erro de comunicação com o backend";
+      toast.error(message);
     }
+  };
+
+  const handleRunDijkstra = async (start: string, end: string) => {
+    await handleRunAlgorithm("dijkstra", { start, end });
   };
 
   const graphSection = [
@@ -215,7 +219,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           title: "Resetar Visualização",
           url: "#",
           onClick: () => {
-            setLastResult(null);
             setEdges((eds) =>
               eds.map((e) => ({
                 ...e,
@@ -274,27 +277,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {
           title: "Dijkstra",
           url: "#",
-          onClick: async () => {
+          onClick: () => {
             if (logicalGraph.nodes.length < 2) {
               toast.info("Adicione pelo menos dois nós ao grafo");
               return;
             }
-            const start = logicalGraph.nodes[0].id;
-            const end = logicalGraph.nodes[logicalGraph.nodes.length - 1].id;
-            await handleRunAlgorithm("dijkstra", { start, end });
-          },
-        },
-        {
-          title: "Calcular Caminho",
-          url: "#",
-          onClick: async () => {
-            if (logicalGraph.nodes.length < 2) {
-              toast.info("Adicione pelo menos dois nós ao grafo");
-              return;
-            }
-            const start = logicalGraph.nodes[0].id;
-            const end = logicalGraph.nodes[logicalGraph.nodes.length - 1].id;
-            await handleRunAlgorithm("dijkstra", { start, end });
+            setShowDijkstraDialog(true);
           },
         },
       ],
@@ -368,6 +356,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         open={showRandomGraphDialog}
         onOpenChange={setShowRandomGraphDialog}
         onGenerate={handleGenerateRandomGraph}
+      />
+      <DijkstraDialog
+        open={showDijkstraDialog}
+        onOpenChange={setShowDijkstraDialog}
+        nodes={logicalGraph.nodes}
+        onConfirm={async ({ start, end }) => {
+          await handleRunDijkstra(start, end);
+        }}
       />
     </>
   );
