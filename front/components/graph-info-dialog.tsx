@@ -43,45 +43,45 @@ export function GraphInfoDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
+            <DialogContent className="max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>Informações do Grafo</DialogTitle>
                     <DialogDescription>
                         Visualize detalhes sobre a estrutura do grafo atual.
                     </DialogDescription>
                 </DialogHeader>
-                <ScrollArea className="flex-1 pr-4 min-h-0">
-                    <div className="space-y-6 py-2">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <p className="text-sm font-medium text-muted-foreground">
-                                    Total de Nós
-                                </p>
-                                <p className="text-2xl font-bold">
-                                    {graph.nodes.length}
-                                </p>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-sm font-medium text-muted-foreground">
-                                    Total de Arestas
-                                </p>
-                                <p className="text-2xl font-bold">
-                                    {graph.edges.length}
-                                </p>
-                            </div>
+                <div className="space-y-6 py-2">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                            <p className="text-sm font-medium text-muted-foreground">
+                                Total de Nós
+                            </p>
+                            <p className="text-2xl font-bold">
+                                {graph.nodes.length}
+                            </p>
                         </div>
+                        <div className="space-y-1">
+                            <p className="text-sm font-medium text-muted-foreground">
+                                Total de Arestas
+                            </p>
+                            <p className="text-2xl font-bold">
+                                {graph.edges.length}
+                            </p>
+                        </div>
+                    </div>
 
-                        <Separator />
+                    <Separator />
 
-                        <div className="space-y-2">
-                            <h3 className="text-sm font-semibold">
-                                Nós ({sortedNodes.length})
-                            </h3>
-                            {sortedNodes.length === 0 ? (
-                                <p className="text-sm text-muted-foreground">
-                                    Nenhum nó no grafo.
-                                </p>
-                            ) : (
+                    <div className="space-y-2">
+                        <h3 className="text-sm font-semibold">
+                            Nós ({sortedNodes.length})
+                        </h3>
+                        {sortedNodes.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">
+                                Nenhum nó no grafo.
+                            </p>
+                        ) : (
+                            <ScrollArea className="h-[240px] pr-4">
                                 <div className="space-y-1">
                                     {sortedNodes.map((node, index) => (
                                         <div
@@ -100,20 +100,22 @@ export function GraphInfoDialog({
                                         </div>
                                     ))}
                                 </div>
-                            )}
-                        </div>
+                            </ScrollArea>
+                        )}
+                    </div>
 
-                        <Separator />
+                    <Separator />
 
-                        <div className="space-y-2">
-                            <h3 className="text-sm font-semibold">
-                                Arestas ({sortedEdges.length})
-                            </h3>
-                            {sortedEdges.length === 0 ? (
-                                <p className="text-sm text-muted-foreground">
-                                    Nenhuma aresta no grafo.
-                                </p>
-                            ) : (
+                    <div className="space-y-2">
+                        <h3 className="text-sm font-semibold">
+                            Arestas ({sortedEdges.length})
+                        </h3>
+                        {sortedEdges.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">
+                                Nenhuma aresta no grafo.
+                            </p>
+                        ) : (
+                            <ScrollArea className="h-[240px] pr-4">
                                 <div className="space-y-1">
                                     {sortedEdges.map((edge, index) => (
                                         <div
@@ -145,10 +147,10 @@ export function GraphInfoDialog({
                                         </div>
                                     ))}
                                 </div>
-                            )}
-                        </div>
+                            </ScrollArea>
+                        )}
                     </div>
-                </ScrollArea>
+                </div>
             </DialogContent>
         </Dialog>
     );
