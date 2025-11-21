@@ -177,7 +177,6 @@ function CanvasContent() {
                 fitView
             >
                 <Background />
-                {/* <MiniMap /> */}
             </ReactFlow>
             <Toolbar mode={interactionMode} onModeChange={setInteractionMode} />
             <EdgeWeightDialog
