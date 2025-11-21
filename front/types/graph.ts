@@ -1,6 +1,5 @@
 import { Node, Edge } from "@xyflow/react";
 
-// Visual Models
 export type GraphNode = Node<{ label: string }>;
 
 export type GraphEdge = Edge<{
@@ -12,7 +11,6 @@ export type FlowGraphState = {
     edges: GraphEdge[];
 };
 
-// Logical Models
 export type LogicalNode = {
     id: string;
     label: string;
@@ -31,7 +29,6 @@ export type LogicalGraph = {
     directed: boolean;
 };
 
-// Algorithm Models
 export type AlgorithmRequest = {
     graph: LogicalGraph;
     algorithm: "bfs" | "dfs" | "dijkstra";

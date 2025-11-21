@@ -23,12 +23,10 @@ export function GraphInfoDialog({
     onOpenChange,
     graph,
 }: GraphInfoDialogProps) {
-    // Ordenar nós por label
     const sortedNodes = [...graph.nodes].sort((a, b) =>
         a.label.localeCompare(b.label)
     );
 
-    // Ordenar arestas por source, depois target, depois peso
     const sortedEdges = [...graph.edges].sort((a, b) => {
         const sourceCompare = a.source.localeCompare(b.source);
         if (sourceCompare !== 0) return sourceCompare;
@@ -39,7 +37,6 @@ export function GraphInfoDialog({
         return weightA - weightB;
     });
 
-    // Criar um mapa de IDs para labels para busca rápida
     const nodeLabelMap = new Map(
         graph.nodes.map((node) => [node.id, node.label])
     );
@@ -55,7 +52,6 @@ export function GraphInfoDialog({
                 </DialogHeader>
                 <ScrollArea className="flex-1 pr-4 min-h-0">
                     <div className="space-y-6 py-2">
-                        {/* Estatísticas */}
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
                                 <p className="text-sm font-medium text-muted-foreground">
@@ -77,7 +73,6 @@ export function GraphInfoDialog({
 
                         <Separator />
 
-                        {/* Lista de Nós */}
                         <div className="space-y-2">
                             <h3 className="text-sm font-semibold">
                                 Nós ({sortedNodes.length})
@@ -110,7 +105,6 @@ export function GraphInfoDialog({
 
                         <Separator />
 
-                        {/* Lista de Arestas */}
                         <div className="space-y-2">
                             <h3 className="text-sm font-semibold">
                                 Arestas ({sortedEdges.length})

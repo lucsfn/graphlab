@@ -53,7 +53,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     } | null>(null);
 
     const handleAddNode = (label: string) => {
-        // Adicionar nó no centro do canvas (posição padrão será ajustada pelo React Flow)
         addNode(label, { x: 250, y: 250 });
         toast.success("Nó adicionado com sucesso");
     };

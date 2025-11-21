@@ -36,7 +36,6 @@ export function Toolbar({ mode, onModeChange }: ToolbarProps) {
         selectedNodeIds.length > 0 || selectedEdgeIds.length > 0;
 
     const handleAddNode = (label: string) => {
-        // Add node at center of canvas
         addNode(label, { x: 250, y: 250 });
         toast.success("Nó adicionado com sucesso");
     };
@@ -91,7 +90,6 @@ export function Toolbar({ mode, onModeChange }: ToolbarProps) {
 
                         <Separator orientation="vertical" className="h-8" />
 
-                        {/* Add Node */}
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
@@ -106,7 +104,6 @@ export function Toolbar({ mode, onModeChange }: ToolbarProps) {
                             <TooltipContent>Adicionar Nó</TooltipContent>
                         </Tooltip>
 
-                        {/* Delete */}
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
@@ -124,7 +121,6 @@ export function Toolbar({ mode, onModeChange }: ToolbarProps) {
 
                         <Separator orientation="vertical" className="h-8" />
 
-                        {/* Clear Graph */}
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button

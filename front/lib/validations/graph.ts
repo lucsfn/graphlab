@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Schema para adicionar nó
 export const addNodeSchema = z.object({
     label: z
         .string()
@@ -11,7 +10,6 @@ export const addNodeSchema = z.object({
 
 export type AddNodeFormData = z.infer<typeof addNodeSchema>;
 
-// Schema para adicionar aresta
 export const addEdgeSchema = z
     .object({
         source: z.string().min(1, "Selecione o nó de origem"),
