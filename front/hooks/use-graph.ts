@@ -3,6 +3,9 @@ import { useNodesState, useEdgesState } from "@xyflow/react";
 import { GraphNode, GraphEdge, LogicalGraph } from "@/types/graph";
 import { nanoid } from "nanoid";
 
+const defaultSourceHandleId = (nodeId: string) => `${nodeId}-out-bottom`;
+const defaultTargetHandleId = (nodeId: string) => `${nodeId}-in-top`;
+
 export function useGraph() {
   const [nodes, setNodes, onNodesChange] = useNodesState<GraphNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<GraphEdge>([]);
@@ -32,15 +35,18 @@ export function useGraph() {
       targetHandle?: string | null
     ) => {
       const edgeId = nanoid();
-      const resolvedSourceHandle = sourceHandle ?? `${source}-out`;
-      const resolvedTargetHandle = targetHandle ?? `${target}-in`;
+      const resolvedSourceHandle =
+        sourceHandle ?? defaultSourceHandleId(source);
+      const resolvedTargetHandle =
+        targetHandle ?? defaultTargetHandleId(target);
       const newEdge: GraphEdge = {
         id: edgeId,
         source,
         target,
         sourceHandle: resolvedSourceHandle,
         targetHandle: resolvedTargetHandle,
-        animated: true,
+        type: "straight",
+        animated: false,
         label: weight !== undefined ? `${weight}` : undefined,
         data: { weight },
       };
@@ -236,8 +242,9 @@ export function useGraph() {
           id: nanoid(),
           source,
           target,
-          sourceHandle: `${source}-out`,
-          targetHandle: `${target}-in`,
+          sourceHandle: defaultSourceHandleId(source),
+          targetHandle: defaultTargetHandleId(target),
+          type: "straight",
           animated: false,
           label: `${weight}`,
           data: { weight },
