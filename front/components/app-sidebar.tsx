@@ -29,10 +29,12 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { runBFS, runDFS, runDijkstra } from "@/lib/api";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { state } = useSidebar();
     const isCollapsed = state === "collapsed";
+    const { highlightPath, highlightEdges, edges, setEdges, ...graphCtx } = useGraphContext();
     const {
         addNode,
         addEdge,
@@ -40,7 +42,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         logicalGraph,
         selectedNodes,
         updateNodeLabel,
-    } = useGraphContext();
+    } = graphCtx;
 
     const [showAddNodeDialog, setShowAddNodeDialog] = useState(false);
     const [showAddEdgeDialog, setShowAddEdgeDialog] = useState(false);
@@ -51,6 +53,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         id: string;
         label: string;
     } | null>(null);
+    // Estado para visualização
+    const [lastResult, setLastResult] = useState<any>(null);
 
     const handleAddNode = (label: string) => {
         addNode(label, { x: 250, y: 250 });
@@ -87,6 +91,56 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         toast.success("Rótulo atualizado com sucesso");
         setShowEditNodeDialog(false);
         setEditingNode(null);
+    };
+
+    const handleRunAlgorithm = async (
+        algorithm: "bfs" | "dfs" | "dijkstra",
+        params: { start: string; end?: string }
+    ) => {
+        try {
+            const req = {
+                graph: logicalGraph,
+                algorithm,
+                params,
+            };
+            let res;
+            if (algorithm === "bfs") {
+                res = await runBFS(req);
+            } else if (algorithm === "dfs") {
+                res = await runDFS(req);
+            } else if (algorithm === "dijkstra") {
+                res = await runDijkstra(req);
+            } else {
+                toast.error("Algoritmo não suportado");
+                return;
+            }
+            setLastResult(res.result);
+            if (res.status === "success") {
+                let msg = "";
+                if ((algorithm === "bfs" || algorithm === "dfs") && res.result?.edgesInPath) {
+                    // Destacar arestas de busca em amarelo
+                    setEdges((eds) =>
+                        eds.map((e) =>
+                            res.result?.edgesInPath?.includes(e.id)
+                                ? { ...e, style: { ...e.style, stroke: "#facc15", strokeWidth: 3 } }
+                                : { ...e, style: { ...e.style, stroke: undefined, strokeWidth: undefined } }
+                        )
+                    );
+                    msg = `Busca realizada! Nós visitados: ${res.result?.nodesVisited}`;
+                } else if (algorithm === "dijkstra" && res.result?.edgesInPath) {
+                    // Destacar caminho mínimo em vermelho
+                    highlightEdges(res.result.edgesInPath);
+                    msg = `Caminho mínimo encontrado! Custo: ${res.result.distance}`;
+                } else {
+                    msg = "Algoritmo executado com sucesso";
+                }
+                toast.success(msg);
+            } else {
+                toast.error(res.message || "Erro ao executar algoritmo");
+            }
+        } catch (err: any) {
+            toast.error(err?.message || "Erro de comunicação com o backend");
+        }
     };
 
     const graphSection = [
@@ -129,27 +183,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     onClick: () => setShowGraphInfoDialog(true),
                 },
                 {
-                    title: "Nós Visitados",
-                    url: "#",
-                    onClick: () => {
-                        // TODO: Implementar visualização de nós visitados
-                        toast.info("Funcionalidade em desenvolvimento");
-                    },
-                },
-                {
-                    title: "Arestas Visitadas",
-                    url: "#",
-                    onClick: () => {
-                        // TODO: Implementar visualização de arestas visitadas
-                        toast.info("Funcionalidade em desenvolvimento");
-                    },
-                },
-                {
                     title: "Resetar Visualização",
                     url: "#",
                     onClick: () => {
-                        // TODO: Implementar reset de visualização
-                        toast.info("Funcionalidade em desenvolvimento");
+                        setLastResult(null);
+                        setEdges((eds) =>
+                            eds.map((e) => ({ ...e, style: { ...e.style, stroke: undefined, strokeWidth: undefined } }))
+                        );
+                        toast.success("Visualização resetada");
                     },
                 },
             ],
@@ -165,17 +206,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 {
                     title: "BFS (Largura)",
                     url: "#",
-                    onClick: () => {
-                        // TODO: Implementar algoritmo BFS
-                        toast.info("Funcionalidade em desenvolvimento");
+                    onClick: async () => {
+                        if (!logicalGraph.nodes.length) {
+                            toast.info("Adicione nós ao grafo primeiro");
+                            return;
+                        }
+                        const start = logicalGraph.nodes[0].id;
+                        await handleRunAlgorithm("bfs", { start });
                     },
                 },
                 {
                     title: "DFS (Profundidade)",
                     url: "#",
-                    onClick: () => {
-                        // TODO: Implementar algoritmo DFS
-                        toast.info("Funcionalidade em desenvolvimento");
+                    onClick: async () => {
+                        if (!logicalGraph.nodes.length) {
+                            toast.info("Adicione nós ao grafo primeiro");
+                            return;
+                        }
+                        const start = logicalGraph.nodes[0].id;
+                        await handleRunAlgorithm("dfs", { start });
                     },
                 },
             ],
@@ -189,17 +238,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 {
                     title: "Dijkstra",
                     url: "#",
-                    onClick: () => {
-                        // TODO: Implementar algoritmo Dijkstra
-                        toast.info("Funcionalidade em desenvolvimento");
+                    onClick: async () => {
+                        if (logicalGraph.nodes.length < 2) {
+                            toast.info("Adicione pelo menos dois nós ao grafo");
+                            return;
+                        }
+                        const start = logicalGraph.nodes[0].id;
+                        const end = logicalGraph.nodes[logicalGraph.nodes.length - 1].id;
+                        await handleRunAlgorithm("dijkstra", { start, end });
                     },
                 },
                 {
                     title: "Calcular Caminho",
                     url: "#",
-                    onClick: () => {
-                        // TODO: Implementar cálculo de caminho mínimo
-                        toast.info("Funcionalidade em desenvolvimento");
+                    onClick: async () => {
+                        if (logicalGraph.nodes.length < 2) {
+                            toast.info("Adicione pelo menos dois nós ao grafo");
+                            return;
+                        }
+                        const start = logicalGraph.nodes[0].id;
+                        const end = logicalGraph.nodes[logicalGraph.nodes.length - 1].id;
+                        await handleRunAlgorithm("dijkstra", { start, end });
                     },
                 },
             ],
